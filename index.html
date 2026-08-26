@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Home & Savings Manager</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f5f7fb;color:#202536}
+header{background:linear-gradient(135deg,#6c5ce7,#8e7dff);color:white;padding:24px 18px;border-radius:0 0 28px 28px}
+header h1{margin:0 0 6px;font-size:25px}header p{margin:0;opacity:.9}
+.container{max-width:1050px;margin:auto;padding:16px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin:16px 0}
+.card{background:white;border-radius:18px;padding:18px;box-shadow:0 5px 18px #0000000d}
+.card h2{font-size:18px;margin:0 0 14px}.stat{font-size:27px;font-weight:700;margin-top:7px}.muted{color:#747b8c;font-size:13px}
+input,select,button{width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;font-size:15px}
+button{border:0;background:#6c5ce7;color:white;font-weight:bold;cursor:pointer;margin-top:9px}
+button.delete{background:#ff6b6b;width:auto;padding:7px 10px}.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.list{margin-top:12px}.item{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #eee;padding:10px 0;gap:8px}
+.progress{height:12px;background:#eee;border-radius:20px;overflow:hidden;margin:10px 0}.bar{height:100%;background:#00b894;width:0%;transition:.4s}
+.badge{display:inline-block;background:#eee;padding:5px 9px;border-radius:20px;font-size:12px}
+.full{grid-column:1/-1}.success{color:#00a878}.danger{color:#e74c3c}
+nav{display:flex;gap:8px;overflow:auto;padding:10px 0}nav button{min-width:120px;background:white;color:#555;border:1px solid #ddd;margin:0}.section{display:none}.section.active{display:block}
+@media(max-width:550px){.row{grid-template-columns:1fr}.stat{font-size:23px}}
+</style>
+</head>
+<body>
+<header>
+<div class="container">
+<h1>🏠 My Home & Savings Manager</h1>
+<p>Manage your home, money, savings and daily work in one place.</p>
+</div>
+</header>
+
+<div class="container">
+<nav>
+<button onclick="show('money')">💰 Money</button>
+<button onclick="show('work')">🧹 House Work</button>
+<button onclick="show('shopping')">🛒 Shopping</button>
+<button onclick="show('meals')">🍳 Meals</button>
+<button onclick="show('bills')">💡 Bills</button>
+<button onclick="show('family')">👨‍👩‍👧 Family</button>
+<button onclick="show('home')">🏠 Home</button>
+</nav>
+
+<section id="money" class="section active">
+<div class="grid">
+<div class="card"><span class="muted">Monthly Income</span><div class="stat" id="incomeView">₹0</div></div>
+<div class="card"><span class="muted">Total Expenses</span><div class="stat danger" id="expenseView">₹0</div></div>
+<div class="card"><span class="muted">Can Save This Month</span><div class="stat success" id="saveView">₹0</div></div>
+<div class="card"><span class="muted">Already Saved</span><div class="stat" id="savedView">₹0</div></div>
+</div>
+
+<div class="grid">
+<div class="card">
+<h2>💰 Income & Savings Goal</h2>
+<div class="row">
+<div><label>Monthly Income</label><input id="income" type="number" placeholder="₹"></div>
+<div><label>Already Saved</label><input id="saved" type="number" placeholder="₹"></div>
+</div>
+<label>Savings Goal</label><input id="goal" type="number" placeholder="Example: ₹1,00,000">
+<button onclick="saveMoney()">Save Money Details</button>
+</div>
+
+<div class="card">
+<h2>🎯 Savings Goal</h2>
+<div id="goalText">Enter your goal.</div>
+<div class="progress"><div class="bar" id="goalBar"></div></div>
+<div id="goalPercent">0% completed</div>
+</div>
+</div>
+
+<div class="card">
+<h2>🧾 Add Expense</h2>
+<div class="row">
+<input id="expenseName" placeholder="Expense name">
+<input id="expenseAmount" type="number" placeholder="Amount ₹">
+</div>
+<button onclick="addExpense()">Add Expense</button>
+<div class="list" id="expenseList"></div>
+</div>
+</section>
+
+<section id="work" class="section">
+<div class="card">
+<h2>🧹 House Work</h2>
+<div class="row">
+<input id="workInput" placeholder="Example: Clean kitchen">
+<select id="workDay"><option>Today</option><option>Tomorrow</option><option>This Week</option></select>
+</div>
+<button onclick="addWork()">Add Work</button>
+<div class="list" id="workList"></div>
+</div>
+</section>
+
+<section id="shopping" class="section">
+<div class="card">
+<h2>🛒 Shopping List</h2>
+<div class="row"><input id="shopInput" placeholder="Example: Rice 5kg"><input id="shopPrice" type="number" placeholder="Expected ₹"></div>
+<button onclick="addShop()">Add Shopping Item</button>
+<div class="list" id="shopList"></div>
+</div>
+</section>
+
+<section id="meals" class="section">
+<div class="card">
+<h2>🍳 Meal Planner</h2>
+<div class="row">
+<select id="mealDay"><option>Monday</option><option>Tuesday</option><option>Wednesday</option><option>Thursday</option><option>Friday</option><option>Saturday</option><option>Sunday</option></select>
+<input id="mealInput" placeholder="Breakfast / Lunch / Dinner">
+</div>
+<button onclick="addMeal()">Add Meal</button>
+<div class="list" id="mealList"></div>
+</div>
+</section>
+
+<section id="bills" class="section">
+<div class="card">
+<h2>💡 Monthly Bills</h2>
+<div class="row">
+<input id="billName" placeholder="EB / Water / Gas / Internet">
+<input id="billAmount" type="number" placeholder="₹">
+</div>
+<button onclick="addBill()">Add Bill</button>
+<div class="list" id="billList"></div>
+</div>
+</section>
+</div>
+
+<script>
+const get=(k,d=[])=>JSON.parse(localStorage.getItem(k)||JSON.stringify(d));
+const set=(k,v)=>localStorage.setItem(k,JSON.stringify(v));
+let expenses=get('expenses'),works=get('works'),shops=get('shops'),meals=get('meals'),bills=get('bills');
+let family=get('family'),familyNotes=get('familyNotes'),maintenance=get('maintenance'),homeTasks=get('homeTasks');
+
+function money(n){return '₹'+Number(n||0).toLocaleString('en-IN')}
+function show(id){document.querySelectorAll('.section').forEach(x=>x.classList.remove('active'));document.getElementById(id).classList.add('active')}
+function saveMoney(){
+ localStorage.setItem('income',document.getElementById('income').value||0);
+ localStorage.setItem('saved',document.getElementById('saved').value||0);
+ localStorage.setItem('goal',document.getElementById('goal').value||0);
+ render();
+}
+function addExpense(){
+ let n=document.getElementById('expenseName').value.trim(),a=+document.getElementById('expenseAmount').value;
+ if(!n||!a)return alert('Enter expense name and amount');
+ expenses.push({n,a});set('expenses',expenses);document.getElementById('expenseName').value='';document.getElementById('expenseAmount').value='';render();
+}
+function del(type,i){window[type].splice(i,1);set(type,window[type]);render()}
+function addWork(){let n=workInput.value.trim();if(!n)return;works.push({n,d:workDay.value,done:false});set('works',works);workInput.value='';render()}
+function toggleWork(i){works[i].done=!works[i].done;set('works',works);render()}
+function addShop(){let n=shopInput.value.trim(),a=+shopPrice.value||0;if(!n)return;shops.push({n,a,done:false});set('shops',shops);shopInput.value='';shopPrice.value='';render()}
+function toggleShop(i){shops[i].done=!shops[i].done;set('shops',shops);render()}
+function addMeal(){let n=mealInput.value.trim();if(!n)return;meals.push({d:mealDay.value,n});set('meals',meals);mealInput.value='';render()}
+
+function addFamily(){let n=familyName.value.trim();if(!n)return alert('Enter family member name');family.push({n,r:familyRole.value});set('family',family);familyName.value='';render()}
+function addFamilyNote(){let n=familyNote.value.trim();if(!n)return;familyNotes.push(n);set('familyNotes',familyNotes);familyNote.value='';render()}
+function saveHome(){set('home',{name:homeName.value,rooms:homeRooms.value,rent:homeRent.value,people:homePeople.value});render()}
+function addMaintenance(){let n=maintInput.value.trim();if(!n)return;maintenance.push({n,d:maintDate.value});set('maintenance',maintenance);maintInput.value='';maintDate.value='';render()}
+function addHomeTask(){let n=homeTask.value.trim();if(!n)return;homeTasks.push({n,t:homeTaskType.value,done:false});set('homeTasks',homeTasks);homeTask.value='';render()}
+function toggleHomeTask(i){homeTasks[i].done=!homeTasks[i].done;set('homeTasks',homeTasks);render()}
+
+function addBill(){let n=billName.value.trim(),a=+billAmount.value;if(!n||!a)return; bills.push({n,a});set('bills',bills);billName.value='';billAmount.value='';render()}
+
+function render(){
+ let income=+localStorage.getItem('income')||0,saved=+localStorage.getItem('saved')||0,goal=+localStorage.getItem('goal')||0;
+ let exp=expenses.reduce((s,x)=>s+x.a,0), can=Math.max(0,income-exp);
+ incomeView.textContent=money(income);expenseView.textContent=money(exp);saveView.textContent=money(can);savedView.textContent=money(saved);
+ let total=saved+can,percent=goal?Math.min(100,total/goal*100):0;
+ goalBar.style.width=percent+'%';goalPercent.textContent=Math.round(percent)+'% completed';
+ goalText.innerHTML=goal?`Goal: <b>${money(goal)}</b><br>Current savings: <b>${money(total)}</b><br>${total>=goal?'<span class="success">🎉 Goal reached!</span>':'Still need <b>'+money(goal-total)+'</b> to reach your goal.'}`:'Enter your savings goal.';
+ expenseList.innerHTML=expenses.length?expenses.map((x,i)=>`<div class="item"><span>${x.n}<br><small>${money(x.a)}</small></span><button class="delete" onclick="del('expenses',${i})">Delete</button></div>`).join(''):'No expenses yet.';
+ workList.innerHTML=works.length?works.map((x,i)=>`<div class="item"><span>${x.done?'✅':'⬜'} ${x.n}<br><small>${x.d}</small></span><span><button onclick="toggleWork(${i})">${x.done?'Undo':'Done'}</button><button class="delete" onclick="del('works',${i})">×</button></span></div>`).join(''):'No house work added.';
+ shopList.innerHTML=shops.length?shops.map((x,i)=>`<div class="item"><span>${x.done?'✅':'🛒'} ${x.n}<br><small>${money(x.a)}</small></span><span><button onclick="toggleShop(${i})">${x.done?'Undo':'Bought'}</button><button class="delete" onclick="del('shops',${i})">×</button></span></div>`).join(''):'Shopping list is empty.';
+ mealList.innerHTML=meals.length?meals.map((x,i)=>`<div class="item"><span>🍽️ <b>${x.d}</b> — ${x.n}</span><button class="delete" onclick="del('meals',${i})">×</button></div>`).join(''):'No meals planned.';
+ billList.innerHTML=bills.length?bills.map((x,i)=>`<div class="item"><span>💡 ${x.n}</span><span><b>${money(x.a)}</b> <button class="delete" onclick="del('bills',${i})">×</button></span></div>`).join(''):'No bills added.';
+ familyList.innerHTML=family.length?family.map((x,i)=>`<div class="item"><span>👤 <b>${x.n}</b><br><small>${x.r}</small></span><button class="delete" onclick="del('family',${i})">×</button></div>`).join(''):'No family members added.';
+ familyNotes.innerHTML=familyNotes.length?familyNotes.map((x,i)=>`<div class="item"><span>❤️ ${x}</span><button class="delete" onclick="del('familyNotes',${i})">×</button></div>`).join(''):'No family notes.';
+ let h=get('home',{});homeName.value=h.name||'';homeRooms.value=h.rooms||'';homeRent.value=h.rent||'';homePeople.value=h.people||'';
+ homeSummary.innerHTML=h.name?`<b>${h.name}</b><br>Rooms: ${h.rooms||0} &nbsp; People: ${h.people||0}<br>Rent / EMI: ${money(h.rent||0)}`:'Enter your home details.';
+ maintList.innerHTML=maintenance.length?maintenance.map((x,i)=>`<div class="item"><span>🔧 ${x.n}<br><small>${x.d||'No date'}</small></span><button class="delete" onclick="del('maintenance',${i})">×</button></div>`).join(''):'No maintenance tasks.';
+ homeTaskList.innerHTML=homeTasks.length?homeTasks.map((x,i)=>`<div class="item"><span>${x.done?'✅':'⬜'} ${x.n}<br><small>${x.t}</small></span><span><button onclick="toggleHomeTask(${i})">${x.done?'Undo':'Done'}</button><button class="delete" onclick="del('homeTasks',${i})">×</button></span></div>`).join(''):'No home tasks.';
+
+}
+income.value=localStorage.getItem('income')||'';saved.value=localStorage.getItem('saved')||'';goal.value=localStorage.getItem('goal')||'';render();
+</script>
+</body>
+</html>
